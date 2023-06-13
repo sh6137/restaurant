@@ -1,5 +1,6 @@
 package com.example.restaurant.naver;
 
+import com.example.restaurant.naver.dto.SearchImageReq;
 import com.example.restaurant.naver.dto.SearchLocalReq;
 import com.example.restaurant.naver.dto.SearchLocalRes;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,15 @@ public class NaverClientTest {
 
         SearchLocalRes result = naverClient.searchLocal(search);
 
+        System.out.println(result);
+    }
+
+    @Test
+    public void searchImageTest(){
+        var search = new SearchImageReq();
+        search.setQuery("갈비집");
+
+        var result = naverClient.searchImage(search);
         System.out.println(result);
     }
 

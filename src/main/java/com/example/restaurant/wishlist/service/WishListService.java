@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 public class WishListService {
     private final NaverClient naverClient;
     private final WishListRepository wishListRepository;
-    public WishListDto search(String query){
+
+    public WishListDto search(String query) {
         //지역검색
         SearchLocalReq searchLocalReq = new SearchLocalReq();
         searchLocalReq.setQuery(query);
@@ -27,7 +28,7 @@ public class WishListService {
 
         if (searchLocalRes.getTotal() > 0) {
             var localItem = searchLocalRes.getItems().stream().findFirst().get();
-            var imageQuery = localItem.getTitle().replaceAll("<[^>]*>","");
+            var imageQuery = localItem.getTitle().replaceAll("<[^>]*>", "");
             SearchImageReq searchImageReq = new SearchImageReq();
             searchImageReq.setQuery(imageQuery);
 
@@ -55,7 +56,8 @@ public class WishListService {
         WishListEntity wishListEntity = wishListRepository.save(entity);
         return entityToDto(wishListEntity);
     }
-    private WishListEntity dtoToEntity(WishListDto wishListDto){
+
+    private WishListEntity dtoToEntity(WishListDto wishListDto) {
         var entity = new WishListEntity();
         entity.setIndex(wishListDto.getIndex());
         entity.setTitle(wishListDto.getTitle());
@@ -69,7 +71,8 @@ public class WishListService {
         entity.setLastVisitDate(wishListDto.getLastVisitDate());
         return entity;
     }
-    private WishListDto entityToDto(WishListEntity wishListEntity){
+
+    private WishListDto entityToDto(WishListEntity wishListEntity) {
         var dto = new WishListDto();
         dto.setIndex(wishListEntity.getIndex());
         dto.setTitle(wishListEntity.getTitle());
@@ -86,9 +89,22 @@ public class WishListService {
     }
 
     public List<WishListDto> findAll() {
-        return wishListRepository.listAll()
+        return wishListRepository.findAll()
                 .stream()
                 .map(it -> entityToDto(it))
                 .collect(Collectors.toList());
+    }
+
+    public void delete(int index) {
+        wishListRepository.deleteById(index);
+    }
+
+    public void addVisit(int index) {
+        var wishItem = wishListRepository.findById(index);
+        if (wishItem.isPresent()) {
+            var item = wishItem.get();
+            item.setVisit(true);
+            item.setVisitCount(item.getVisitCount() + 1);
+        }
     }
 }
